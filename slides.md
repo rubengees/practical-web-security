@@ -1,6 +1,6 @@
 ---
 theme: default
-background: assets/cover.webp
+background: cover.webp
 title: Praktische Web Security
 drawings:
   persist: false
