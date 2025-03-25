@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "slidev build",
+    "build:pages": "slidev build --base /practical-web-security/",
     "dev": "slidev",
     "export": "slidev export"
   },
