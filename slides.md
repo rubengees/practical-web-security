@@ -443,3 +443,28 @@ class FetchController {
 
 - Keine dynamischen URLs zulassen
 - Whitelist und Validierung, wenn erforderlich
+
+---
+
+<div class="flex flex-col items-center justify-center h-full">
+  <img src="./assets/hack-the-box.webp" alt="Hack the box logo" width="350">
+
+  https://app.hackthebox.com/challenges/Spookifier
+</div>
+
+---
+
+# Hack The Box Lösung
+
+- Template Injection mit Dateisystemzugriff
+- Engine erlaubt es beliebigen Python-Code auszuführen
+
+<br>
+
+<v-click>
+
+```
+${open("/flag.txt", "r").read()}
+```
+
+</v-click>
