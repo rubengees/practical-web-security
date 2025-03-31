@@ -14,21 +14,20 @@ mdc: true
 
 # Was ist Web Security?
 
-- Schutz von (sensiblen) Informationen
-- Schutz von Infrastruktur
-
-Angreifer dürfen keinen Zugriff auf Informationen bekommen, die nicht für sie bestimmt sind und die reibungslose
-Funktion von Infrastruktur soll gewahrt bleiben.
+Schutz von Computersystemen, Netzwerken und Websites vor Schäden, Diebstahl oder Störungen.
+Sie umfasst auch den Schutz von Daten, Software und Hardware. Web Security ist ein Teilgebiet der Cyber Security.
 
 ---
 
 # Warum ist das wichtig?
 
+Heartland Payment Systems ⸱ 2008
+
 <img src="./assets/heartland-logo.jpg" width="200" class="float-end">
 
 - SQL Injection über MSSQL um weitere Tools zu installieren
 - Millionen von Kreditkartendaten kompromittiert
-- 200M$ Verlust für das Unternehmen
+- 200 Mio. $ Verlust für das Unternehmen
 - 50 %, später 77 % Verlust am Aktienmarkt
 - Trotz PCI DSS Compliance
 - 20 Jahre Haft für den Angreifer
@@ -36,6 +35,8 @@ Funktion von Infrastruktur soll gewahrt bleiben.
 ---
 
 # Warum ist das wichtig?
+
+Panera Bread ⸱ 2018
 
 <div class="flex flex-col float-end items-end">
     <img src="./assets/panera-bread-logo.png" width="200" class="bg-white">
@@ -47,9 +48,13 @@ Funktion von Infrastruktur soll gewahrt bleiben.
 
 <img src="./assets/panera-bread-leak.png" width="400" class="mt-4">
 
+<!-- 2024 nochmal mit Mitarbeiterdaten -->
+
 ---
 
 # Warum ist das wichtig?
+
+Next.js ⸱ 2025
 
 <div class="flex flex-col float-end items-end">
     <img src="./assets/nextjs-logo.svg" alt="Next.js" width="200" class="bg-white p-4">
@@ -58,7 +63,7 @@ Funktion von Infrastruktur soll gewahrt bleiben.
 
 - Improper Authorization Vulnerability
 - Fehler im Framework mit Auswirkungen auf jede Next.js Seite mit betroffenen Versionen
-- Das Setzen vom `x-middleware-subrequest` Header reicht - geringe Hürde
+- Das Setzen des `x-middleware-subrequest` Headers reicht – geringe Hürde
 
 <Footer>
     <a href="https://github.com/vercel/next.js/security/advisories/GHSA-f82v-jwr5-mffw">GitHub Advisory</a>
@@ -74,7 +79,7 @@ Funktion von Infrastruktur soll gewahrt bleiben.
 
 - OWASP - Open Worldwide Application Security Project ist eine nonprofit foundation
 - Autorität beim Thema Web Security
-- Resourcen zum Thema Security mit praktischen Beispielen und Empfehlungen
+- Ressourcen zum Thema Security mit praktischen Beispielen und Empfehlungen
 
 <Footer>
     <a href="https://owasp.org/">OWASP</a>
@@ -110,10 +115,10 @@ class AdminController(private val userService: UserService) {
 
 # A01:2021 – Broken Access Control
 
-- Deny by default - Zugriff standardmäßig ablehnen und nur explizit erlauben
+- Deny by default - Zugriff standardmäßig verweigern und nur explizit erlauben
     - Standardverhalten von Spring Security
 - Zugriffskontrolle möglichst global implementieren damit es automatisch richtig ist
-- Tokens nach Logout invalidieren oder kurze Gültigkeiten
+- Tokens nach Logout invalidieren oder kurze Gültigkeitsdauer setzen 
 
 <br>
 
@@ -136,6 +141,37 @@ class SecurityConfig {
 ```
 
 </v-click>
+
+---
+
+# A01:2021 – Next.js CVE-2025-29927
+
+```js
+export const run = withTaggedErrors(async function runWithTaggedErrors(params) {
+  const runtime = await getRuntimeContext(params)
+  const subreq = params.request.headers[`x-middleware-subrequest`]
+  const subrequests = typeof subreq === 'string' ? subreq.split(':') : []
+
+  const MAX_RECURSION_DEPTH = 5
+  const depth = subrequests.reduce(
+    (acc, curr) => (curr === params.name ? acc + 1 : acc),
+    0
+  )
+
+  if (depth >= MAX_RECURSION_DEPTH) {
+    return {
+      waitUntil: Promise.resolve(),
+      response: new runtime.context.Response(null, {
+        headers: {
+          'x-middleware-next': '1',
+        },
+      }),
+    }
+  }
+  
+  // ...
+})
+```
 
 ---
 
@@ -164,6 +200,8 @@ node --openssl-legacy-provider main.js
 ```
 
 </v-click>
+
+<!-- Weiteres Beispiel: Hostname verification ausschalten -->
 
 ---
 
@@ -212,16 +250,21 @@ SELECT * FROM users WHERE username = 'admin' OR '1' = '1'
 # A03:2021 – Injection
 
 ```vue
+<script setup>
+  const { data: comments, refresh } = useFetch('/api/comments');
+  const newComment = ref('');
 
-<script setup lang="ts">
-  import { ref } from "@vue/reactivity"
-
-  const userInput = ref('');
+  const addComment = async () => {
+    await $fetch('/api/comments', { method: 'POST', body: newComment.value });
+    refresh();
+    newComment.value = '';
+  };
 </script>
 
 <template>
-  <input v-model="userInput" placeholder="Enter text"/>
-  Output: <span v-html="userInput"></span>
+  <input v-model="newComment" />
+  <button @click="addComment">Post</button>
+  <div v-for="c in comments" :key="c.id" v-html="c.content"></div>
 </template>
 ```
 
@@ -253,16 +296,8 @@ class UserRepository(private val jdbcTemplate: JdbcTemplate) {
 <br>
 
 ```vue
-
-<script setup lang="ts">
-  import { ref } from "@vue/reactivity"
-
-  const userInput = ref('');
-</script>
-
 <template>
-  <input v-model="userInput" placeholder="Enter text"/>
-  Output: <span>{{ userInput }}</span>
+  <div v-for="c in comments" :key="c">{{ c }}</div>
 </template>
 ```
 
@@ -311,7 +346,7 @@ fun corsConfigurer() = object : WebMvcConfigurer {
 
 # A05:2021 – Security Misconfiguration
 
-- Automatisierung mit Linting/Testing/CI
+- Automatisierung mit Linting, Testing und CI
 - Code Reviews und regelmäßiges Auditing
 - Dokumentation lesen und sich mit Technologie auseinandersetzen
 
@@ -353,7 +388,7 @@ fun corsConfigurer() = object : WebMvcConfigurer {
 # A06:2021 – Vulnerable and Outdated Components
 
 - Regelmäßige Updates, auch von größeren Komponenten
-- Tooling zum automatischen Ermitteln von Abhängigkeiten und Vulnerabilites
+- Tooling zum automatischen Ermitteln von Abhängigkeiten und Schwachstellen
 - Entfernen von ungenutzten Komponenten
 
 ---
@@ -380,7 +415,7 @@ fun corsConfigurer() = object : WebMvcConfigurer {
   - Mindestlänge 10-12 Zeichen und möglichst ein Mix von Buchstaben, Nummern und Symbolen
 - Häufig genutzte Passwörter ablehnen (anhand einer Liste, Datenbank oder API)
 - Rate-Limiting und Deaktivierung bei vielen Anmeldeversuchen
-- Nicht mit Standard-Passwörtern ausrollen, sondern die Konfiguration erforderlich machen
+- Nicht mit Standard-Passwörtern ausrollen, sondern eine individuelle Konfiguration erzwingen
 
 ---
 
@@ -397,7 +432,7 @@ fun corsConfigurer() = object : WebMvcConfigurer {
 - Integritätschecks und digitale Signaturen einsetzen
 - Verwendung von vertrauenswürdigen Repositories wie npm oder Maven Central
   - Eigene Repositories als Proxy
-- Festsetzen von Softwareversionen um automatische Updates zu vermeiden
+- Festsetzen von Softwareversionen, um unkontrollierte Updates zu vermeiden
 - Reviews und Zugriffskontrolle für Code, Konfigurationen und CI/CD
 - Tooling zum Finden von Malware (z.B. OWASP Security Check)
 
@@ -408,7 +443,7 @@ fun corsConfigurer() = object : WebMvcConfigurer {
 - Wichtige Events wie (fehlgeschlagene) Logins oder wichtige Transaktionen sollten geloggt werden
 - Alerting für schnelle Reaktion
 - Historische Aufbewahrung um Analyse zu ermöglichen
-- Konkreter Plan um auf Angriffe zu reagieren
+- Ein konkreter Plan zur Reaktion auf Angriffe
 
 ---
 
@@ -442,7 +477,7 @@ class FetchController {
 # A10:2021 – Server-Side Request Forgery (SSRF)
 
 - Keine dynamischen URLs zulassen
-- Whitelist und Validierung, wenn erforderlich
+- Erlaubnisliste und Validierung, falls erforderlich
 
 ---
 
