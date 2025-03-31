@@ -23,7 +23,7 @@ Sie umfasst auch den Schutz von Daten, Software und Hardware. Web Security ist e
 
 Heartland Payment Systems ⸱ 2008
 
-<img src="./assets/heartland-logo.jpg" width="200" class="float-end">
+<img src="./assets/heartland-logo.jpg" alt="Heartland Logo" width="200" class="float-end">
 
 - SQL Injection über MSSQL um weitere Tools zu installieren
 - Millionen von Kreditkartendaten kompromittiert
@@ -39,14 +39,14 @@ Heartland Payment Systems ⸱ 2008
 Panera Bread ⸱ 2018
 
 <div class="flex flex-col float-end items-end">
-    <img src="./assets/panera-bread-logo.png" width="200" class="bg-white">
+    <img src="./assets/panera-bread-logo.png" alt="Panera Bread Logo" width="200" class="bg-white">
 </div>
 
 - Ungeschützte APIs
 - Daten von Millionen Kunden öffentlich abrufbar
 - Reaktion auf Report erst nach 8 Monaten (!) und nachdem das Problem öffentlich gemacht wurde
 
-<img src="./assets/panera-bread-leak.png" width="400" class="mt-4">
+<img src="./assets/panera-bread-leak.png" alt="Panera Bread Leak Screenshot" width="400" class="mt-4">
 
 <!-- 2024 nochmal mit Mitarbeiterdaten -->
 
@@ -74,7 +74,7 @@ Next.js ⸱ 2025
 # OWASP Foundation
 
 <div class="flex flex-col float-end items-end">
-    <img src="./assets/owasp-logo.svg" width="200" class="bg-white pa-2">
+    <img src="./assets/owasp-logo.svg" alt="OWASP Logo" width="200" class="bg-white pa-2">
 </div>
 
 - OWASP - Open Worldwide Application Security Project ist eine nonprofit foundation
@@ -403,7 +403,7 @@ fun corsConfigurer() = object : WebMvcConfigurer {
 
 <v-click>
 
-<img src="./assets/forced-password-reset.jpeg" width="350">
+<img src="./assets/forced-password-reset.jpeg" alt="Passwort-Reset Warnung" width="350">
 
 </v-click>
 
